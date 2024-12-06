@@ -49,3 +49,11 @@ class Reports(Induk):
                 ["081262002", 2]
             ]
         }
+
+    # Getter
+    def get_list_products(self):
+        return self.__list_products
+    
+    # format harga
+    def price_format(self, price):
+        return f"{price:,}".replace(",", ".")
