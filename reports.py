@@ -3,6 +3,7 @@ from induk import Induk
 class Reports(Induk):
     def __init__(self):
         super().__init__()
+        self.__transaction_id = "241210001"
         self.__list_products = {
             # Format ID product: Nama barang, Harga Normal, Diskon, Harga setelah diskon
             "071253001": ["Koper Lojel Lineo Salmon S", 500000, "50%", 250000],
@@ -46,14 +47,15 @@ class Reports(Induk):
             ],
             "241210001" : [
                 ["080261002", 1],
-                ["081262002", 2]
+                ["081262002", 2],
             ]
         }
 
         self.__chart = {
-            "241210001" : [
-                ["080261002", 1],
-                ["081262002", 2]
+            self.__transaction_id : [
+                ['1111',1],
+                ['123',5],
+                ['222',1]
             ]
         }
 
@@ -65,6 +67,26 @@ class Reports(Induk):
     def get_chart(self):
         return self.__chart
     
+    # Get transaction id
+    def get_transaction_id(self):
+        return self.__transaction_id
+    
+    # def set chart
+    def set_chart(self, transaction_id, input_product_id, qty):
+        for product_id in self.__chart[transaction_id]:
+            if product_id[0] == input_product_id:
+                # self.__chart[transaction_id][product_id][1] += qty
+                print(self.__chart[transaction_id])
+                print(product_id[1])
+                return
+
+        print(self.__chart[transaction_id][0][1])
+        self.__chart[transaction_id].append([input_product_id, qty])
+    
     # format harga
     def price_format(self, price):
         return f"{price:,}".replace(",", ".")
+    
+rpt = Reports()
+rpt.set_chart(transaction_id="241210001", qty=3, input_product_id="123")
+# print(rpt.get_chart())

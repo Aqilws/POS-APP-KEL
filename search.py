@@ -5,85 +5,109 @@ from tkinter import ttk
 class Search(Products):
     def __init__(self):
         super().__init__()
+        self.__product_id = str
+        self.__qty = 0
     
     def window(self):
         window = tk.Tk()
         window.title(self.get_aplication_name())
         window.geometry(self.get_screen_size())
+        window.resizable(False, False)
 
         # konfigurasi grid kepada window
         window.grid_columnconfigure(0, weight=1)
         window.grid_rowconfigure(0, weight=1)
-        
-        # Membuat frame sebagai element utama
-        # frame = tk.Frame(window, bg="red")
-        # frame.grid(row=0, column=0, sticky="nswe")
-        # frame.grid_rowconfigure(0, weight=1)
-        # frame.grid_columnconfigure(0, weight=1)
-
 
         # Function add
         def add_qty():
             try: 
-                qty = int(input_qty.get()) + 1
+                self.__qty = int(input_qty.get()) + 1
             except:
-                qty = 1
+                self.__qty = 1
             input_qty.delete(0,tk.END)
-            input_qty.insert(0, qty)
+            input_qty.insert(0, self.__qty)
+            button_add_to_chart.config(state="normal")
         
         # Function reduce
         def reduce_qty():
-            try: 
-                qty = int(input_qty.get()) - 1
-            except:
-                qty = 0
+            if self.__qty > 0:
+                self.__qty = self.__qty - 1
+            
             input_qty.delete(0,tk.END)
-            input_qty.insert(0, qty)
+            input_qty.insert(0, self.__qty)
+            if self.__qty < 1:
+                button_add_to_chart.config(state="disabled")
+        
+        def on_table_selected(event):
+            selected_item = table.selection()
+            input_qty.delete(0, tk.END)
+            self.__qty = 1
+            input_qty.insert(0, self.__qty)
+            button_add_to_chart.config(state="normal")
+            if selected_item:
+                self.__product_id = table.item(selected_item[0], "values")[0]
+                frame_add_chart.grid(row=0, column=0, sticky="se")
+            else:
+                frame_add_chart.grid_forget()
 
-        # Frame table
-        frame_table = tk.Frame(window, padx=10, background="blue")
+        def add_to_chart():
+            self.set_chart(self.get_transaction_id(), product_id=self.__product_id, qty=self.__qty)
+            # bersihkan treeview
+            for product in table_chat.get_children():
+                table_chat.delete(product)
+            
+            # Tampilkan data ke chart/keranjang    
+            no = 0
+            for transaction_id in self.get_chart():
+                for chart in self.get_chart()[transaction_id]:
+                    if chart[0] in self.get_list_products():
+                        no += 1
+                        name_product = self.get_list_products()[chart[0]][1]
+                        qty = chart[1]
+                        harga_promo = int(self.get_list_products()[chart[0]][4].replace(".", "")) * qty
+                        # total_tambahan += harga_promo
+                        table_chat.insert("", "end", values=[no, name_product, self.price_format(harga_promo), qty])
+            # print(total_tambahan)
+
+
+        # ---------------------------------- Frame table ----------------------------------
+        frame_table = tk.Frame(window, padx=10)
         frame_table.grid(row=0, column=0, sticky="wn")
 
         # frame search
         frame_search = tk.Frame(frame_table)
         frame_search.grid(row=0, column=0, sticky="w")
-        # Label search
         label_search = tk.Label(frame_search, text="Cari Barang:")
         label_search.grid(row=0, column=0, pady=5, sticky="w")
-        # Input search
         input_search = tk.Entry(frame_search)
         input_search.grid(row=1, column=0)
-        # Button search
         button_search = tk.Button(frame_search, text="Cari")
         button_search.grid(row=1, column=1, padx=10)
 
         # Frame add to chart
         frame_add_chart = tk.Frame(frame_table)
         frame_add_chart.grid(row=0, column=0, sticky="se")
-        # button reduce
+        frame_add_chart.grid_forget() # Sembunyikan ketia pertama kali
         button_del = tk.Button(frame_add_chart, text="-", width=3, command=reduce_qty)
         button_del.grid(row=0, column=0, padx=10)
-        # Input QTY
         input_qty = tk.Entry(frame_add_chart, width=2)
         input_qty.grid(row=0, column=1)
-        # button add
         button_add = tk.Button(frame_add_chart, text="+", width=3, command=add_qty)
         button_add.grid(row=0, column=2, padx=10)
-        # button add to chart
-        button_add_to_chart = tk.Button(frame_add_chart, text="Tambahkan")
+        button_add_to_chart = tk.Button(frame_add_chart, text="Tambahkan", command=add_to_chart)
         button_add_to_chart.grid(row=0, column=3)
+        button_add_to_chart.config(state="disabled")
 
         # Table Search
         columns = ("ID", "Nama_Poduk", "Harga_Normal", "Diskon", "Harga_Promo")
-        table = ttk.Treeview(frame_table, columns=columns, show="headings")
-        
+        table = ttk.Treeview(frame_table, columns=columns, show="headings", height=18)
+        table.grid(row=2, column=0, pady=10)
         # Manambahkan colom dan menepatkan heading
         table.heading("ID", text="ID")
         table.heading("Nama_Poduk", text="Nama Produk")
         table.heading("Harga_Normal", text="Harga Normal")
         table.heading("Diskon", text="Diskon")
         table.heading("Harga_Promo", text="Harga Promo")
-       
         # Menyesuaikan lebar kolom
         for i in columns:
             if i == "Nama_Poduk":
@@ -92,7 +116,6 @@ class Search(Products):
                 table.column(i, width=100, anchor="center")
             else:
                 table.column(i, width=100, anchor="e")
-        
         # Menambahkan data ke tabel/Treeveiw
         for product_id in self.get_list_products():
             product = self.get_list_products()[product_id]
@@ -100,32 +123,28 @@ class Search(Products):
             product[len(product) - 1] = self.price_format(product[len(product) - 1]) # ubah format angka
             product.insert(0, product_id) # Tambahkan id
             table.insert("", "end", values=product)
-        # Menempatkan Treeview/table di layout
-        table.grid(row=2, column=0, pady=10)
+        # Event ketika item yang ada di table di klik
+        table.bind("<ButtonRelease-1>", on_table_selected)
 
-        # frame chart
-        frame_chart = tk.Frame(window, padx=15, background="red")
+        # ---------------------------------- frame chart ----------------------------------
+        frame_chart = tk.Frame(window, padx=15)
         frame_chart.grid(row=0, column=1, sticky="en")
-        # Frame Label chart
         frame_label_chart = tk.Frame(frame_chart)
         frame_label_chart.grid(row=0, column=0, sticky="we")
-        # Label Chart
         label_chart = tk.Label(frame_label_chart, text="Daftar Tambahan Barang")
         label_chart.grid(row=0, column=0)
 
         # Frame edit chart
         frame_edit_chart = tk.Frame(frame_chart, padx=0, pady=0)
         frame_edit_chart.grid(row=0, column=0, sticky="e")
-        # Edit
         button_edit = tk.Button(frame_edit_chart, text="Edit")
         button_edit.grid(row=0, column=0, padx=10)
-        # Hapus
         button_delete = tk.Button(frame_edit_chart, text="Hapus")
         button_delete.grid(row=0, column=1)
 
         # Tabel chart
         columns_chart = ("No", "Nama_Produk", "Harga_Promo", "Jumlah")
-        table_chat = ttk.Treeview(frame_chart, columns=columns_chart, show="headings")
+        table_chat = ttk.Treeview(frame_chart, columns=columns_chart, show="headings", height=20)
         table_chat.grid(row=1, column=0, pady=5)
         # Set heading
         table_chat.heading("No", text="No")
@@ -133,23 +152,18 @@ class Search(Products):
         table_chat.heading("Harga_Promo", text="Harga Promo")
         table_chat.heading("Jumlah", text="Jumlah")
         # Set ukuran lebar kolom
-        table_chat.column("No", width=50)
+        table_chat.column("No", width=50, anchor="center")
         table_chat.column("Nama_Produk", width=150)
-        table_chat.column("Harga_Promo", width=100)
-        table_chat.column("Jumlah", width=50)
+        table_chat.column("Harga_Promo", width=100, anchor="e")
+        table_chat.column("Jumlah", width=50, anchor="center")
 
         # Frame end / selesai
-        frame_end = tk.Frame(frame_chart, bg="light blue")
-        frame_end.grid(row=2, column=0, sticky="se")
-        # Label end
-        label_end = tk.Button(frame_end, text="Selesai")
-        label_end.grid(row=0, column=0)
+        label_total_tambahan = tk.Label(frame_chart, text=f"Total Tambahan Rp. ")
+        label_total_tambahan.grid(row=2, column=0, sticky="w")
+        button_end = tk.Button(frame_chart, text="Selesai")
+        button_end.grid(row=2, column=0, sticky="E")
 
-
-
-
-
-
+        # Tampilkan
         window.mainloop()
 
 apk = Search()
