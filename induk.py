@@ -1,4 +1,4 @@
-from typing import Any
+import tkinter as tk
 
 # Class induk / Parent
 class Induk:
@@ -13,3 +13,19 @@ class Induk:
     # Get screen size
     def get_screen_size(self):
         return self.__screen_size
+    
+    def window(self):
+        # Membuat jendela utama
+        root = tk.Tk()
+        root.title("Contoh Tkinter Sederhana")
+        root.geometry("300x200")
+
+        # Menambahkan label ke dalam jendela
+        label = tk.Label(root, text="Halo, Dunia!", font=("Arial", 14))
+        label.pack(pady=50)
+
+        # Menjalankan aplikasi
+        root.mainloop()
+
+# induk = Induk()
+# induk.window()

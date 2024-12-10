@@ -1,4 +1,5 @@
 from product import Products
+from induk import Induk
 import tkinter as tk
 from tkinter import ttk
 
@@ -17,6 +18,10 @@ class Search(Products):
         # konfigurasi grid kepada window
         window.grid_columnconfigure(0, weight=1)
         window.grid_rowconfigure(0, weight=1)
+
+        def back_to_transaction():
+            idk = Induk()
+            idk.window()
 
         # Function add
         def add_qty():
@@ -51,23 +56,16 @@ class Search(Products):
                 frame_add_chart.grid_forget()
 
         def add_to_chart():
-            self.set_chart(self.get_transaction_id(), product_id=self.__product_id, qty=self.__qty)
+            self.set_chart(product_id=self.__product_id, qty=self.__qty)
             # bersihkan treeview
             for product in table_chat.get_children():
                 table_chat.delete(product)
             
             # Tampilkan data ke chart/keranjang    
             no = 0
-            for transaction_id in self.get_chart():
-                for chart in self.get_chart()[transaction_id]:
-                    if chart[0] in self.get_list_products():
-                        no += 1
-                        name_product = self.get_list_products()[chart[0]][1]
-                        qty = chart[1]
-                        harga_promo = int(self.get_list_products()[chart[0]][4].replace(".", "")) * qty
-                        # total_tambahan += harga_promo
-                        table_chat.insert("", "end", values=[no, name_product, self.price_format(harga_promo), qty])
-            # print(total_tambahan)
+            chart = self.get_chart()
+            for transaction_id in chart[self.get_transaction_id()]:
+                table_chat.insert("", "end", values=transaction_id)
 
 
         # ---------------------------------- Frame table ----------------------------------
@@ -160,7 +158,7 @@ class Search(Products):
         # Frame end / selesai
         label_total_tambahan = tk.Label(frame_chart, text=f"Total Tambahan Rp. ")
         label_total_tambahan.grid(row=2, column=0, sticky="w")
-        button_end = tk.Button(frame_chart, text="Selesai")
+        button_end = tk.Button(frame_chart, text="Selesai", command=back_to_transaction)
         button_end.grid(row=2, column=0, sticky="E")
 
         # Tampilkan

@@ -52,11 +52,12 @@ class Reports(Induk):
         }
 
         self.__chart = {
-            self.__transaction_id : [
-                ['1111',1],
-                ['123',5],
-                ['222',1]
-            ]
+            self.__transaction_id : {
+                '112' : 1,
+                '132' : 1,
+                '321' : 1,
+                '222' : 1,
+            }
         }
 
     # Get list products
@@ -70,23 +71,17 @@ class Reports(Induk):
     # Get transaction id
     def get_transaction_id(self):
         return self.__transaction_id
-    
-    # def set chart
-    def set_chart(self, transaction_id, input_product_id, qty):
-        for product_id in self.__chart[transaction_id]:
-            if product_id[0] == input_product_id:
-                # self.__chart[transaction_id][product_id][1] += qty
-                print(self.__chart[transaction_id])
-                print(product_id[1])
-                return
 
-        print(self.__chart[transaction_id][0][1])
-        self.__chart[transaction_id].append([input_product_id, qty])
+    def set_chart(self, product_id, qty):
+        if product_id in self.__chart[self.__transaction_id]:
+            self.__chart[self.__transaction_id][product_id] += qty
+        else:
+            self.__chart[self.__transaction_id][product_id] = qty
     
     # format harga
     def price_format(self, price):
         return f"{price:,}".replace(",", ".")
     
-rpt = Reports()
-rpt.set_chart(transaction_id="241210001", qty=3, input_product_id="123")
+# rpt = Reports()
+# rpt.set_chart(qty=3, product_id="222")
 # print(rpt.get_chart())
