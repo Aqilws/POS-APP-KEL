@@ -89,7 +89,9 @@ class Laporan_Penjualan:
         print(table)
     
     def detail(self):
+        # note untuk tambahkan informasi untuk detail
         table = PrettyTable()
+        table.title = f"{self.transaction_id} | {self.transactions[self.transaction_id]["kasir"]} | {self.transactions[self.transaction_id]["tgl"]}"
         table.field_names = ["No", "Nama Produk", "Brutto", "Diskon", "Netto", "qty", "Sub-Total"]
         no = 1
         for prd_id in self.transactions[self.transaction_id]["items"]:
