@@ -1,5 +1,5 @@
 from prettytable import PrettyTable
-
+import os
 
 class Laporan_Penjualan:
     def __init__(self):
@@ -39,85 +39,126 @@ class Laporan_Penjualan:
         }
         self.transactions = {
             # note tambahkan metode pembayaran
-            '1': {'tgl': '01/12/24',
+            '1': {'date': '01/12/24',
                 'kasir': 'andris',
                 'items': {'79260002': 1, '82263001': 1, '78259002': 3},
                 'total_qty': 5,
-                'total_value': 7312500},
-            '2': {'tgl': '15/12/24',
+                'total_value': 7312500,
+                'pay' : 'tunai'},
+            '2': {'date': '15/12/24',
                 'kasir': 'tomo',
                 'items': {'82263002': 2, '80261002': 3, '73252002': 2, '79260002': 2},
                 'total_qty': 9,
-                'total_value': 46600000},
-            '3': {'tgl': '19/12/24',
+                'total_value': 46600000,
+                'pay' : 'tunai'},
+            '3': {'date': '19/12/24',
                 'kasir': 'tomo',
                 'items': {'82263002': 2, '76257001': 2, '71254001': 2},
                 'total_qty': 6,
-                'total_value': 18330000},
-            '4': {'tgl': '20/12/24',
+                'total_value': 18330000,
+                'pay' : 'tunai'},
+            '4': {'date': '20/12/24',
                 'kasir': 'aqil',
                 'items': {'75256001': 1, '71253003': 2, '76257001': 1, '77258002': 3, '71254001': 2},
                 'total_qty': 9,
-                'total_value': 5098750},
-            '5': {'tgl': '21/12/24',
+                'total_value': 5098750,
+                'pay' : 'tunai'},
+            '5': {'date': '21/12/24',
                 'kasir': 'aqil',
                 'items': {'72251003': 2},
                 'total_qty': 2,
-                'total_value': 1650000},
-            '6': {'tgl': '28/12/24',
+                'total_value': 1650000,
+                'pay' : 'tunai'},
+            '6': {'date': '28/12/24',
                 'kasir': 'aqil',
                 'items': {'82263002': 3, '76257001': 1, '80261001': 3, '81262001': 3, '80261002': 2},
                 'total_qty': 12,
-                'total_value': 79775000},
+                'total_value': 79775000,
+                'pay' : 'tunai'},
         }
-    
+
     def view(self):
+        os.system('cls')
         table = PrettyTable()
         table.title = ("Laporan Penjualan")
-        table.field_names = ["No", "Tanggal", "ID", "Kasir", "Total Qty", "Total Value"]
+        table.field_names = ["No", "Tanggal", "ID", "Kasir", "Total Qty", "Total Value", "Metode Pembayaran"]
+        table.align["Kasir"] = 'l'
+        table.align["Total Value"] = 'r'
         no = 1
         for trs_id in self.transactions:
             table.add_row([
                 no, # Nomor urut
-                self.transactions[trs_id]["tgl"], # Tanggal
+                self.transactions[trs_id]["date"], # Tanggal
                 trs_id, # Transaction ID
                 self.transactions[trs_id]["kasir"], # Kasir
                 self.transactions[trs_id]["total_qty"], # qty
-                self.transactions[trs_id]["total_value"], # Sub total
+                f"{self.transactions[trs_id]["total_value"]:,}", # total
+                f"{self.transactions[trs_id]["pay"]}", # Metode pembayaran
             ])
             no += 1
         print(table)
+
+        print("\n===== Menu Laporan Penjualan ======")
+        print("[1] Lihat detail")
+        print("[2] Urutkan")
+        print("[0] Kembali ke Menu Utama")
+        selectd = input("\nPilih menu: ")
+        self.select(selectd)
     
     def detail(self):
-        # note untuk tambahkan informasi untuk detail
+        os.system('cls')
         table = PrettyTable()
-        table.title = f"{self.transaction_id} | {self.transactions[self.transaction_id]["kasir"]} | {self.transactions[self.transaction_id]["tgl"]}"
+        table.title = f"DETAIL INFORMASI"
         table.field_names = ["No", "Nama Produk", "Brutto", "Diskon", "Netto", "qty", "Sub-Total"]
+        table.align["Nama Produk"] = 'l'
+        table.align["Brutto"] = 'r'
+        table.align["Netto"] = 'r'
+        table.align["Sub-Total"] = 'r'
         no = 1
         for prd_id in self.transactions[self.transaction_id]["items"]:
             table.add_row([
                 no, # Nomor urut
                 self.products[prd_id][0], # nama produk
-                self.products[prd_id][1], # Brutto / Harga normal
+                f"{self.products[prd_id][1]:,}", # Brutto / Harga normal
                 self.products[prd_id][2], # Diskon
-                self.products[prd_id][3], # Netto / harga setelah diskon
+                f"{self.products[prd_id][3]:,}", # Netto / harga setelah diskon
                 self.transactions[self.transaction_id]["items"][prd_id], # qty
-                int(self.products[prd_id][3]) * self.transactions[self.transaction_id]["items"][prd_id], # total value / uang
+                f"{int(self.products[prd_id][3]) * self.transactions[self.transaction_id]["items"][prd_id]:,}", # total value / uang
             ])
             no += 1
+
+        # Tambah total
+        print(f"\nTransaction ID    : {self.transaction_id}")
+        print(f"Tanggal           : {self.transactions[self.transaction_id]["date"]}")
+        print(f"Kasir             : {self.transactions[self.transaction_id]["kasir"]}")
+        print(f"Metode Pembayaran :{self.transactions[self.transaction_id]["pay"]}")
+        print(f"Total Qty         : {self.transactions[self.transaction_id]["items"][prd_id]}")
+        print(f"Total Value       : {self.transactions[self.transaction_id]["total_value"]:,}" )
         print(table)
-    def menu(self):
-        print("\n===== Menu Laporan Penjualan ======")
-        print("[1] Lihat detail")
-        print("[2] Urutkan")
-        print("[0] Kembali ke Menu Utama")
-        in_selectd = input("Pilih menu: ")
-        self.select(in_selectd)
+
+        print("\n[0] Back")
+        selectd = input("Masukan ID lain: ")
+        if selectd == '0':
+            self.view()
+        else: 
+            self.transaction_id = selectd
+            self.detail()
+
+    # def menu(self):
+        
 
     def select(self, value):
         if value == "1":
-            self.transaction_id = input("Pilih Transaction ID: ")
+            self.transaction_id = input("\nMasukan ID transaksi: ")
             self.detail()
+            selected = self.other()
+            if  selected  == '0':
+                os.system('cls')
+                self.view()
+                self.menu()
+            else:
+                self.transaction_id = selected
+                self.detail()
 
 lp = Laporan_Penjualan()
 lp.view()
