@@ -77,15 +77,16 @@ class Laporan_Penjualan:
                 'pay' : 'tunai'},
         }
 
-    def view(self):
+    def view(self, values=[]):
         os.system('cls')
         table = PrettyTable()
         table.title = ("Laporan Penjualan")
-        table.field_names = ["No", "Tanggal", "ID", "Kasir", "Total Qty", "Total Value", "Metode Pembayaran"]
+        table.field_names = ["No", "Tanggal", "ID", "Kasir", "Banyaknya", "Total Bayar", "Metode Pembayaran"]
         table.align["Kasir"] = 'l'
         table.align["Total Value"] = 'r'
+        datas = values if len(values) > 0 else self.transactions
         no = 1
-        for trs_id in self.transactions:
+        for trs_id in datas:
             table.add_row([
                 no, # Nomor urut
                 self.transactions[trs_id]["date"], # Tanggal
@@ -97,69 +98,86 @@ class Laporan_Penjualan:
             ])
             no += 1
         print(table)
-
-        print("\n===== Menu Laporan Penjualan ======")
-        print("[1] Lihat detail")
-        print("[2] Urutkan")
-        print("[0] Kembali ke Menu Utama")
-        selectd = input("\nPilih menu: ")
-        self.select(selectd)
     
     def detail(self):
         os.system('cls')
         table = PrettyTable()
-        table.title = f"DETAIL INFORMASI"
-        table.field_names = ["No", "Nama Produk", "Brutto", "Diskon", "Netto", "qty", "Sub-Total"]
+        table.title = "DETAIL INFORMASI"
+        table.field_names = ["No", "Nama Produk", "Harga Normal", "Diskon", "Harga Jual", "Banyaknya", "Jumlah`"]
         table.align["Nama Produk"] = 'l'
-        table.align["Brutto"] = 'r'
-        table.align["Netto"] = 'r'
+        table.align["Harga Normal"] = 'r'
+        table.align["Harga Jual"] = 'r'
         table.align["Sub-Total"] = 'r'
         no = 1
         for prd_id in self.transactions[self.transaction_id]["items"]:
             table.add_row([
                 no, # Nomor urut
                 self.products[prd_id][0], # nama produk
-                f"{self.products[prd_id][1]:,}", # Brutto / Harga normal
+                f"{self.products[prd_id][1]:,}", # Harga Normal / Harga normal
                 self.products[prd_id][2], # Diskon
-                f"{self.products[prd_id][3]:,}", # Netto / harga setelah diskon
+                f"{self.products[prd_id][3]:,}", # Harga Jual / harga setelah diskon
                 self.transactions[self.transaction_id]["items"][prd_id], # qty
                 f"{int(self.products[prd_id][3]) * self.transactions[self.transaction_id]["items"][prd_id]:,}", # total value / uang
             ])
             no += 1
 
         # Tambah total
-        print(f"\nTransaction ID    : {self.transaction_id}")
+        print(f"\nID Transaksi      : {self.transaction_id}")
         print(f"Tanggal           : {self.transactions[self.transaction_id]["date"]}")
         print(f"Kasir             : {self.transactions[self.transaction_id]["kasir"]}")
-        print(f"Metode Pembayaran :{self.transactions[self.transaction_id]["pay"]}")
-        print(f"Total Qty         : {self.transactions[self.transaction_id]["items"][prd_id]}")
-        print(f"Total Value       : {self.transactions[self.transaction_id]["total_value"]:,}" )
+        print(f"Banyaknya (pcs)   : {self.transactions[self.transaction_id]["total_qty"]}")
+        print(f"Total Bayar (Rp)  : {self.transactions[self.transaction_id]["total_value"]:,}" )
+        print(f"Metode Pembayaran : {self.transactions[self.transaction_id]["pay"]}")
         print(table)
 
         print("\n[0] Back")
         selectd = input("Masukan ID lain: ")
         if selectd == '0':
             self.view()
+            self.select()
         else: 
             self.transaction_id = selectd
             self.detail()
-
-    # def menu(self):
-        
-
-    def select(self, value):
-        if value == "1":
-            self.transaction_id = input("\nMasukan ID transaksi: ")
-            self.detail()
-            selected = self.other()
-            if  selected  == '0':
+    
+    def select(self):
+        print("\n[1] Lihat detail")
+        print("[2] Cari")
+        print("[0] Kembali ke Menu Utama")
+        value = input("\nPilih menu: ")
+        match value:
+            case "1": # tampilkan detail
                 os.system('cls')
-                self.view()
-                self.menu()
-            else:
-                self.transaction_id = selected
-                self.detail()
+                print("\n[0] Kembali")
+                select = input("Masukan ID transaksi: ")
+                if select == '0':
+                    self.view()
+                    self.select()
+                else:
+                    self.transaction_id = select
+                    self.detail()
+                    
+            case "2": # cari transaksi
+                os.system('cls')
+                print("\n[0] Kembali")
+                query = input("Cari ID/tgl/kasir/pembayaran: ").lower()
+                if query == '0':
+                    self.view()
+                    self.select()
+                else:                
+                    results = []
+                    # Cari berdasarkan transaction ID
+                    for trs_id in self.transactions:
+                        if query == trs_id:
+                            results.append(trs_id)
+
+                    # cari berdasrkan nama kasir, metode pembayran, tanggal
+                    if results == []:
+                        for trs_id in self.transactions:
+                            if query in self.transactions[trs_id]["kasir"].lower() or query in self.transactions[trs_id]["pay"].lower() or query in self.transactions[trs_id]["date"]:
+                                results.append(trs_id)
+                    self.view(values=results)
+                    self.select()
 
 lp = Laporan_Penjualan()
 lp.view()
-lp.menu()
+lp.select()
