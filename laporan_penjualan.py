@@ -76,7 +76,8 @@ class Laporan_Penjualan:
                 'total_value': 79775000,
                 'pay' : 'tunai'},
         }
-
+        self.error = str
+        
     def view(self, values=[]):
         os.system('cls')
         table = PrettyTable()
@@ -144,36 +145,42 @@ class Laporan_Penjualan:
         print("[2] Cari")
         print("[0] Kembali ke Menu Utama")
         value = input("\nPilih menu: ")
-        match value:
-            case "1": # tampilkan detail
-                os.system('cls')
-                print("\n[0] Kembali")
-                select = input("Masukan ID transaksi: ")
-                if select == '0':
-                    self.view()
-                    self.select()
-                else:
-                    self.transaction_id = select
-                    self.detail()
+        try :
+            match value:
+                case "1": # tampilkan detail
+                    os.system('cls')
+                    print("\n[0] Kembali")
+                    select = input("Masukan ID transaksi: ")
+                    if select == '0':
+                        self.view()
+                        self.select()
+                    else:
+                        self.transaction_id = select
+                        self.detail()
 
-            case "2": # cari transaksi
-                os.system('cls')
-                print("\n[0] Kembali")
-                query = input("Cari ID/tgl/kasir/pembayaran: ").lower()
-                if query == '0':
-                    self.view()
-                    self.select()
-                else:                
-                    results = []
-                    # Cari berdasarkan transaction ID
-                    for trs_id in self.transactions:
-                        if query == trs_id:
-                            results.append(trs_id)
-
-                    # cari berdasrkan nama kasir, metode pembayran, tanggal
-                    if results == []:
+                case "2": # cari transaksi
+                    os.system('cls')
+                    print("\n[0] Kembali")
+                    query = input("Cari ID/tgl/kasir/pembayaran: ").lower()
+                    if query == '0':
+                        self.view()
+                        self.select()
+                    else:                
+                        results = []
+                        # Cari berdasarkan transaction ID
                         for trs_id in self.transactions:
-                            if query in self.transactions[trs_id]["kasir"].lower() or query in self.transactions[trs_id]["pay"].lower() or query in self.transactions[trs_id]["date"]:
+                            if query == trs_id:
                                 results.append(trs_id)
-                    self.view(values=results)
-                    self.select()
+
+                        # cari berdasrkan nama kasir, metode pembayran, tanggal
+                        if results == []:
+                            for trs_id in self.transactions:
+                                if query in self.transactions[trs_id]["kasir"].lower() or query in self.transactions[trs_id]["pay"].lower() or query in self.transactions[trs_id]["date"]:
+                                    results.append(trs_id)
+                        self.view(values=results)
+                        self.select()
+
+                
+        except :
+            print("\nerror, Masukan piihan yang tersedia!!")
+            self.select()

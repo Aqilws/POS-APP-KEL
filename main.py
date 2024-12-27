@@ -33,6 +33,7 @@ def main():
             stok_barang_menu()
         elif pilihan == "4":
             clear_screen()
+            lp = Laporan_Penjualan()
             lp.view()
             lp.select()
         elif pilihan == "0":
@@ -44,4 +45,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    lp = Laporan_Penjualan()
