@@ -155,7 +155,7 @@ class Laporan_Penjualan:
                 else:
                     self.transaction_id = select
                     self.detail()
-                    
+
             case "2": # cari transaksi
                 os.system('cls')
                 print("\n[0] Kembali")
@@ -177,7 +177,3 @@ class Laporan_Penjualan:
                                 results.append(trs_id)
                     self.view(values=results)
                     self.select()
-
-lp = Laporan_Penjualan()
-lp.view()
-lp.select()

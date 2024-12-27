@@ -2,7 +2,7 @@ import os
 from transaksi import transaksi_menu
 from produk_barang import produk_barang_menu
 from stok_barang import stok_barang_menu
-from laporan_penjualan import laporan_penjualan_menu
+from laporan_penjualan import Laporan_Penjualan
 
 def clear_screen():
     """Menghapus tampilan terminal."""
@@ -33,7 +33,8 @@ def main():
             stok_barang_menu()
         elif pilihan == "4":
             clear_screen()
-            laporan_penjualan_menu()
+            Laporan_Penjualan().view()
+            Laporan_Penjualan().select()
         elif pilihan == "0":
             clear_screen()
             print("Keluar dari aplikasi. Terima kasih!")
