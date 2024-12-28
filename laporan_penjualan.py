@@ -78,16 +78,23 @@ class Laporan_Penjualan:
                 'total_value': 79775000,
                 'pay' : 'tunai'},
         }
-        self.error = str
+        
         
     def view(self, values=[]):
-        os.system('cls')
+        if len(values) > 0 :
+            datas = values 
+        else:
+            datas = self.transactions
+        
+        for trs_id in datas:
+            tSales = self.transactions[trs_id]["total_value"]
+            tQty = self.transactions[trs_id]["total_qty"]
+
         table = PrettyTable()
         table.title = ("Laporan Penjualan")
         table.field_names = ["No", "Tanggal", "ID", "Kasir", "Banyaknya", "Total Bayar", "Metode Pembayaran"]
         table.align["Kasir"] = 'l'
         table.align["Total Value"] = 'r'
-        datas = values if len(values) > 0 else self.transactions
         no = 1
         for trs_id in datas:
             table.add_row([
@@ -100,6 +107,9 @@ class Laporan_Penjualan:
                 f"{self.transactions[trs_id]["pay"]}", # Metode pembayaran
             ])
             no += 1
+        os.system('cls')
+        print(f"Total Sales : {tSales:,}")
+        print(f"Total Qty   : {tQty:,}")
         print(table)
     
     def detail(self):
@@ -132,6 +142,29 @@ class Laporan_Penjualan:
             print(f"Metode Pembayaran : {self.transactions[self.transaction_id]["pay"]}")
             print(table)
     
+    def delete(self):
+        self.detail()
+        while True:
+            action = input("\nApakah anda yakin ingin menghapus Laporan tersebut? y/t: ").lower()
+            if action == "y":
+                self.transactions.pop(self.transaction_id)
+                if not self.transaction_id in self.transactions:
+                    os.system('cls')
+                    input("Berhasil. Laporan telah dihapus...")
+                else:
+                    os.system('cls')
+                    input("Gagal...")
+                self.view()
+                self.select()
+                break
+            elif action == 't':
+                self.view()
+                self.select()
+                break
+            else:
+                os.system('cls')
+                input("Harap masukan printah Y atau T")
+
     def select(self):
         print("\n[1] Lihat detail")
         print("[2] Cari")
@@ -144,7 +177,8 @@ class Laporan_Penjualan:
                 # tidak melakukan perintah apapun, maka secara otomatis akan pindah kehalaman yang memanggil halaman ini
             
             case "1": # tampilkan detail
-                while True:
+                end = True
+                while end:
                     print("\n[0] Kembali")
                     self.transaction_id = input("Masukan ID transaksi: ")
                     if self.transaction_id == '0':
@@ -154,7 +188,25 @@ class Laporan_Penjualan:
                     else :
                         os.system('cls')
                         if self.transaction_id in self.transactions:
-                            self.detail()
+                            while True:
+                                self.detail()
+                                print("\n[1] Hapus")
+                                print("[2] Ubah")
+                                print("[0] Kembali")
+
+                                action = input("\nPilihan: ")
+                                if action == '1':
+                                    self.delete()
+                                    end = False
+                                    break
+                                elif action == '0':
+                                    self.view()
+                                    self.select()
+                                    end = False
+                                    break
+                                else:
+                                    os.system('cls')
+                                    input("Pilihan tidak ada...")
                         else:
                             print("ID tidak ditemukan....")
 
@@ -201,34 +253,11 @@ class Laporan_Penjualan:
                         break
                     else:
                         if self.transaction_id in self.transactions:
-                            self.detail()
-                            while True:
-                                action = input("\nApakah anda yakin ingin menghapus Laporan tersebut? y/t: ").lower()
-                                if action == "y":
-                                    self.transactions.pop(self.transaction_id)
-                                    if not self.transaction_id in self.transactions:
-                                        os.system('cls')
-                                        input("Berhasil. Laporan telah dihapus...")
-                                    else:
-                                        os.system('cls')
-                                        input("Gagal...")
-
-                                    self.view()
-                                    self.select()
-                                    end = False
-                                    break
-                                elif action == 't':
-                                    self.view()
-                                    self.select()
-                                    end = False
-                                    break
-                                else:
-                                    os.system('cls')
-                                    input("Harap masukan printah Y atau T")
+                            self.delete()
+                            end = False
                         else:
                             os.system('cls')
-                            print("ID tidak ditemukan...")
-
+                            input("ID tidak ditemukan...")
                     if end == False: break
 
             case _:
@@ -236,4 +265,3 @@ class Laporan_Penjualan:
                 input("\nPilihan tidak ada..")
                 self.view()
                 self.select()
-
