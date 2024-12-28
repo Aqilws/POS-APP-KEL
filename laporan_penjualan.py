@@ -1,6 +1,8 @@
 from prettytable import PrettyTable
 import os
 
+# note tugas selanjutnya membuat rekap laporan
+
 class Laporan_Penjualan:
     def __init__(self):
         self.transaction_id = str
@@ -101,7 +103,6 @@ class Laporan_Penjualan:
         print(table)
     
     def detail(self):
-        os.system('cls')
         table = PrettyTable()
         table.title = "DETAIL INFORMASI"
         table.field_names = ["No", "Nama Produk", "Harga Normal", "Diskon", "Harga Jual", "Banyaknya", "Jumlah`"]
@@ -122,49 +123,49 @@ class Laporan_Penjualan:
             ])
             no += 1
 
-        # Tambah total
-        print(f"\nID Transaksi      : {self.transaction_id}")
-        print(f"Tanggal           : {self.transactions[self.transaction_id]["date"]}")
-        print(f"Kasir             : {self.transactions[self.transaction_id]["kasir"]}")
-        print(f"Banyaknya (pcs)   : {self.transactions[self.transaction_id]["total_qty"]}")
-        print(f"Total Bayar (Rp)  : {self.transactions[self.transaction_id]["total_value"]:,}" )
-        print(f"Metode Pembayaran : {self.transactions[self.transaction_id]["pay"]}")
-        print(table)
-
-        print("\n[0] Back")
-        selectd = input("Masukan ID lain: ")
-        if selectd == '0':
-            self.view()
-            self.select()
-        else: 
-            self.transaction_id = selectd
-            self.detail()
+            os.system('cls')
+            print(f"\nID Transaksi      : {self.transaction_id}")
+            print(f"Tanggal           : {self.transactions[self.transaction_id]["date"]}")
+            print(f"Kasir             : {self.transactions[self.transaction_id]["kasir"]}")
+            print(f"Banyaknya (pcs)   : {self.transactions[self.transaction_id]["total_qty"]}")
+            print(f"Total Bayar (Rp)  : {self.transactions[self.transaction_id]["total_value"]:,}" )
+            print(f"Metode Pembayaran : {self.transactions[self.transaction_id]["pay"]}")
+            print(table)
     
     def select(self):
         print("\n[1] Lihat detail")
         print("[2] Cari")
+        print("[3] Hapus")
         print("[0] Kembali ke Menu Utama")
         value = input("\nPilih menu: ")
-        try :
-            match value:
-                case "1": # tampilkan detail
-                    os.system('cls')
+        match value:
+            case "0": # kembali ke menu utama
+                pass
+                # tidak melakukan perintah apapun, maka secara otomatis akan pindah kehalaman yang memanggil halaman ini
+            
+            case "1": # tampilkan detail
+                while True:
                     print("\n[0] Kembali")
-                    select = input("Masukan ID transaksi: ")
-                    if select == '0':
+                    self.transaction_id = input("Masukan ID transaksi: ")
+                    if self.transaction_id == '0':
                         self.view()
                         self.select()
-                    else:
-                        self.transaction_id = select
-                        self.detail()
+                        break
+                    else :
+                        os.system('cls')
+                        if self.transaction_id in self.transactions:
+                            self.detail()
+                        else:
+                            print("ID tidak ditemukan....")
 
-                case "2": # cari transaksi
-                    os.system('cls')
+            case "2": # cari transaksi
+                while True:
                     print("\n[0] Kembali")
                     query = input("Cari ID/tgl/kasir/pembayaran: ").lower()
                     if query == '0':
                         self.view()
                         self.select()
+                        break
                     else:                
                         results = []
                         # Cari berdasarkan transaction ID
@@ -172,15 +173,67 @@ class Laporan_Penjualan:
                             if query == trs_id:
                                 results.append(trs_id)
 
-                        # cari berdasrkan nama kasir, metode pembayran, tanggal
+                        # jika cari dengan ID tidak ditemukan, maka akan dicari dengan mencocokkan nama kasir, metode pembayran, tanggal
                         if results == []:
                             for trs_id in self.transactions:
                                 if query in self.transactions[trs_id]["kasir"].lower() or query in self.transactions[trs_id]["pay"].lower() or query in self.transactions[trs_id]["date"]:
                                     results.append(trs_id)
-                        self.view(values=results)
-                        self.select()
+                    
+                        # jika hasil pencarain ditemukan maka akan ditampilkan 
+                        if len(results) > 0:
+                            os.system('cls')
+                            self.view(values=results)
+                            self.select()
+                            input(f"{results}")
+                            break
+                        else:
+                            os.system('cls')
+                            input("Laporan penjualan tidak ditemukan...")
 
-                
-        except :
-            print("\nerror, Masukan piihan yang tersedia!!")
-            self.select()
+            case "3": # Hapus
+                end = True
+                while end:
+                    print("\n[0] Kembali")
+                    self.transaction_id = input("Hapus laporan degan ID: ")
+                    if self.transaction_id == '0':
+                        self.view()
+                        self.select()
+                        break
+                    else:
+                        if self.transaction_id in self.transactions:
+                            self.detail()
+                            while True:
+                                action = input("\nApakah anda yakin ingin menghapus Laporan tersebut? y/t: ").lower()
+                                if action == "y":
+                                    self.transactions.pop(self.transaction_id)
+                                    if not self.transaction_id in self.transactions:
+                                        os.system('cls')
+                                        input("Berhasil. Laporan telah dihapus...")
+                                    else:
+                                        os.system('cls')
+                                        input("Gagal...")
+
+                                    self.view()
+                                    self.select()
+                                    end = False
+                                    break
+                                elif action == 't':
+                                    self.view()
+                                    self.select()
+                                    end = False
+                                    break
+                                else:
+                                    os.system('cls')
+                                    input("Harap masukan printah Y atau T")
+                        else:
+                            os.system('cls')
+                            print("ID tidak ditemukan...")
+
+                    if end == False: break
+
+            case _:
+                os.system('cls')
+                input("\nPilihan tidak ada..")
+                self.view()
+                self.select()
+
