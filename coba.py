@@ -1,6 +1,8 @@
 from prettytable import PrettyTable
 import os
 
+# note tugas selanjutnya membuat rekap laporan
+
 class Laporan_Penjualan:
     def __init__(self):
         self.transaction_id = str
@@ -76,11 +78,9 @@ class Laporan_Penjualan:
                 'total_value': 79775000,
                 'pay' : 'tunai'},
         }
-    
-    def clear_screen(self):
-        os.system('cls' if os.name == 'nt' else 'clear')
         
-    def menu(self, values=[]):
+        
+    def view(self, values=[]):
         if len(values) > 0 :
             datas = values 
         else:
@@ -106,18 +106,10 @@ class Laporan_Penjualan:
                 f"{self.transactions[trs_id]['pay']}", # Metode pembayaran
             ])
             no += 1
-
-        self.clear_screen()
+        os.system('cls')
         print(f"Total Sales : {tSales:,}")
         print(f"Total Qty   : {tQty:,}")
         print(table)
-
-        print("\n[1] Lihat detail")
-        print("[2] Cari")
-        print("[3] Hapus")
-        print("[0] Kembali ke Menu Utama")
-
-        self.select(input("\nPilih menu: "))
     
     def detail(self):
         table = PrettyTable()
@@ -140,132 +132,135 @@ class Laporan_Penjualan:
             ])
             no += 1
 
-        print(f"\nID Transaksi      : {self.transaction_id}")
-        print(f"Tanggal           : {self.transactions[self.transaction_id]["date"]}")
-        print(f"Kasir             : {self.transactions[self.transaction_id]["kasir"]}")
-        print(f"Banyaknya (pcs)   : {self.transactions[self.transaction_id]["total_qty"]}")
-        print(f"Total Bayar (Rp)  : {self.transactions[self.transaction_id]["total_value"]:,}" )
-        print(f"Metode Pembayaran : {self.transactions[self.transaction_id]["pay"]}")
-        print(table)
-
+            os.system('cls')
+            print(f"\nID Transaksi      : {self.transaction_id}")
+            print(f"Tanggal           : {self.transactions[self.transaction_id]["date"]}")
+            print(f"Kasir             : {self.transactions[self.transaction_id]["kasir"]}")
+            print(f"Banyaknya (pcs)   : {self.transactions[self.transaction_id]["total_qty"]}")
+            print(f"Total Bayar (Rp)  : {self.transactions[self.transaction_id]["total_value"]:,}" )
+            print(f"Metode Pembayaran : {self.transactions[self.transaction_id]["pay"]}")
+            print(table)
+    
     def delete(self):
-        if self.transaction_id in self.transactions:
-            while True:
-                self.clear_screen()
-                self.detail()
-                action = input("\nApakah anda yakin ingin menghapus Laporan tersebut? y/t: ").lower()
-                if action == "y":
-                    self.transactions.pop(self.transaction_id)
-                    if not self.transaction_id in self.transactions:
-                        self.clear_screen()
-                        input("Berhasil. Laporan telah dihapus...")
-                    else:
-                        self.clear_screen()
-                        input("Gagal...")
-                    self.menu()
-                    break
-                elif action == 't':
-                    self.menu()
-                    break
+        self.detail()
+        while True:
+            action = input("\nApakah anda yakin ingin menghapus Laporan tersebut? y/t: ").lower()
+            if action == "y":
+                self.transactions.pop(self.transaction_id)
+                if not self.transaction_id in self.transactions:
+                    os.system('cls')
+                    input("Berhasil. Laporan telah dihapus...")
                 else:
-                    self.clear_screen()
-                    input("Harap masukan printah Y atau T")
-                    self.clear_screen()
-
-        else:
-            input("ID tidak ditemukan....")
-
-    def search(self):
-        print("\n[0] Kembali")
-        query = input("Cari ID/tgl/kasir/pembayaran: ").lower()
-        if query == '0':
-            self.menu()
-        else:                
-            results = []
-
-            # Cari berdasarkan transaction ID
-            for trs_id in self.transactions:
-                if query == trs_id:
-                    results.append(trs_id)
-
-            # jika cari dengan ID tidak ditemukan, maka akan dicari dengan mencocokkan nama kasir, metode pembayran, tanggal
-            if results == []:
-                for trs_id in self.transactions:
-                    if query in self.transactions[trs_id]["kasir"].lower() or query in self.transactions[trs_id]["pay"].lower() or query in self.transactions[trs_id]["date"]:
-                        results.append(trs_id)
-        
-            # jika hasil pencarain ditemukan maka akan ditampilkan 
-            if len(results) == 1:
-                self.clear_screen()
-                self.transaction_id = results[0]
-                self.detail()
-                self.sub_select()
-            elif len(results) > 1:
-                self.clear_screen()
-                self.menu(values=results)
+                    os.system('cls')
+                    input("Gagal...")
+                self.view()
+                self.select()
+                break
+            elif action == 't':
+                self.view()
+                self.select()
+                break
             else:
-                self.clear_screen()
-                input("Laporan penjualan tidak ditemukan...")
+                os.system('cls')
+                input("Harap masukan printah Y atau T")
 
-    def select(self, selectd):
-        match selectd:
+    def select(self):
+        print("\n[1] Lihat detail")
+        print("[2] Cari")
+        print("[3] Hapus")
+        print("[0] Kembali ke Menu Utama")
+        value = input("\nPilih menu: ")
+        match value:
             case "0": # kembali ke menu utama
                 pass
                 # tidak melakukan perintah apapun, maka secara otomatis akan pindah kehalaman yang memanggil halaman ini
             
             case "1": # tampilkan detail
-                print("\n[0] Kembali")
-                self.transaction_id = input("Masukan ID transaksi: ")
-                if self.transaction_id == '0':
-                    self.menu()
-                else :
-                    if self.transaction_id in self.transactions:
-                        self.clear_screen()
-                        self.detail()
-                        self.sub_select()
-                    else:
-                        self.clear_screen()
-                        input("ID Tidak ditemukan...")
-                        self.clear_screen()
-                        self.select('1')
+                end = True
+                while end:
+                    print("\n[0] Kembali")
+                    self.transaction_id = input("Masukan ID transaksi: ")
+                    if self.transaction_id == '0':
+                        self.view()
+                        self.select()
+                        break
+                    else :
+                        os.system('cls')
+                        if self.transaction_id in self.transactions:
+                            while True:
+                                self.detail()
+                                print("\n[1] Hapus")
+                                print("[2] Ubah")
+                                print("[0] Kembali")
+
+                                action = input("\nPilihan: ")
+                                if action == '1':
+                                    self.delete()
+                                    end = False
+                                    break
+                                elif action == '0':
+                                    self.view()
+                                    self.select()
+                                    end = False
+                                    break
+                                else:
+                                    os.system('cls')
+                                    input("Pilihan tidak ada...")
+                        else:
+                            print("ID tidak ditemukan....")
 
             case "2": # cari transaksi
-                self.search()
+                while True:
+                    print("\n[0] Kembali")
+                    query = input("Cari ID/tgl/kasir/pembayaran: ").lower()
+                    if query == '0':
+                        self.view()
+                        self.select()
+                        break
+                    else:                
+                        results = []
+                        # Cari berdasarkan transaction ID
+                        for trs_id in self.transactions:
+                            if query == trs_id:
+                                results.append(trs_id)
+
+                        # jika cari dengan ID tidak ditemukan, maka akan dicari dengan mencocokkan nama kasir, metode pembayran, tanggal
+                        if results == []:
+                            for trs_id in self.transactions:
+                                if query in self.transactions[trs_id]["kasir"].lower() or query in self.transactions[trs_id]["pay"].lower() or query in self.transactions[trs_id]["date"]:
+                                    results.append(trs_id)
+                    
+                        # jika hasil pencarain ditemukan maka akan ditampilkan 
+                        if len(results) > 0:
+                            os.system('cls')
+                            self.view(values=results)
+                            self.select()
+                            input(f"{results}")
+                            break
+                        else:
+                            os.system('cls')
+                            input("Laporan penjualan tidak ditemukan...")
 
             case "3": # Hapus
-                print("\n[0] Kembali")
-                self.transaction_id = input("Masukan ID transaksi: ")
-                if self.transaction_id == '0':
-                    self.menu()
-                else :
-                    if self.transaction_id in self.transactions:
-                        self.delete()
+                end = True
+                while end:
+                    print("\n[0] Kembali")
+                    self.transaction_id = input("Hapus laporan degan ID: ")
+                    if self.transaction_id == '0':
+                        self.view()
+                        self.select()
+                        break
                     else:
-                        self.clear_screen()
-                        input("ID Tidak ditemukan...")
-                        self.clear_screen()
-                        self.select('3')
+                        if self.transaction_id in self.transactions:
+                            self.delete()
+                            end = False
+                        else:
+                            os.system('cls')
+                            input("ID tidak ditemukan...")
+                    if end == False: break
 
             case _:
-                self.clear_screen()
-                input("Pilihan tidak ada..")
-                self.clear_screen()
-                self.menu()
-        
-    def sub_select(self):
-        print("\n[1] Hapus")
-        print("[2] Ubah")
-        print("[0] Kembali")
-
-        action = input("\nPilihan: ")
-
-        if action == '1':
-            self.delete()
-        elif action == '0':
-            self.menu()
-        else:
-            self.clear_screen()
-            input("Pilihan tidak ada...")
-            self.clear_screen()
-            self.detail()
-            self.sub_select()
+                os.system('cls')
+                input("\nPilihan tidak ada..")
+                self.view()
+                self.select()

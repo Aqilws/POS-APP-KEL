@@ -34,8 +34,7 @@ def main():
         elif pilihan == "4":
             clear_screen()
             lp = Laporan_Penjualan()
-            lp.view()
-            lp.select()
+            lp.menu()
         elif pilihan == "0":
             clear_screen()
             print("Keluar dari aplikasi. Terima kasih!")
