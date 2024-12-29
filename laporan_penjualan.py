@@ -2,6 +2,12 @@ from prettytable import PrettyTable
 import os
 
 class Laporan_Penjualan:
+    """
+    Kelas untuk mengelola laporan penjualan,
+    
+    cara menggunakannya. panggil metode .menu() untuk menampilkan menu utama dari Laporan Penjualan
+    """
+
     def __init__(self):
         self.transaction_id = str
         self.products = {
@@ -78,9 +84,21 @@ class Laporan_Penjualan:
         }
     
     def clear_screen(self):
+        """
+        metode untuk membersihkan text yang ada pada terminal
+        """
         os.system('cls' if os.name == 'nt' else 'clear')
         
     def menu(self, values=[]):
+        """
+        metode untuk menampilkan menu utama dari class Laporan Penjualan.
+
+        cara menggunakannya,
+        jika ingin menampilkan beberapa data laporan tertentu cukup panggil metode ini dengan mengisi parameter values=[] datanya bertipe list.
+
+        jika ingin menampilkan semua datanya cukup panggil metode-nya saja .menu()
+        """
+
         if len(values) > 0 :
             datas = values 
         else:
@@ -120,6 +138,14 @@ class Laporan_Penjualan:
         self.select(input("\nPilih menu: "))
     
     def detail(self):
+        """
+        metode untuk menampilkan detail dari transaksi dengan id tertentu. untuk data yang ingin ditampikan diambil dari atribut self.transaction_id
+
+        cara meanggunaknnya,
+        1. set data yang ingin di tampikan ke atribut self.transaction_id
+        2. panggil metodenya .detail()
+        """
+        
         table = PrettyTable()
         table.title = "DETAIL INFORMASI"
         table.field_names = ["No", "Nama Produk", "Harga Normal", "Diskon", "Harga Jual", "Banyaknya", "Jumlah`"]
@@ -149,6 +175,13 @@ class Laporan_Penjualan:
         print(table)
 
     def delete(self):
+        """
+        metode untuk menghapus transaksi berdasarkan id tertentu. ID di ambil dari atribut self.transaction_id
+
+        cara menggunakannyacara meanggunaknnya,
+        1. set data yang ingin di tampikan ke atribut self.transaction_id
+        2. panggil metodenya .detail()
+        """
         if self.transaction_id in self.transactions:
             while True:
                 self.clear_screen()
@@ -176,13 +209,19 @@ class Laporan_Penjualan:
             input("ID tidak ditemukan....")
 
     def search(self):
+        """
+        Metode untuk mencari transaksi berdasarkan ID, Nama Kasir, Tanggal, dan Metode Pembayaran.
+        
+        cara menggunakanya, cukup panggil metode-nya .search()
+        """
+
         print("\n[0] Kembali")
         query = input("Cari ID/tgl/kasir/pembayaran: ").lower()
         if query == '0':
             self.menu()
         else:                
             results = []
-
+            self.sea
             # Cari berdasarkan transaction ID
             for trs_id in self.transactions:
                 if query == trs_id:
@@ -208,6 +247,12 @@ class Laporan_Penjualan:
                 input("Laporan penjualan tidak ditemukan...")
 
     def select(self, selectd):
+        """
+        metode mengarahkan perogram berdasarkan pilihan user
+
+        Argumen 
+        selectd: berisi data yang diinput user
+        """
         match selectd:
             case "0": # kembali ke menu utama
                 pass
