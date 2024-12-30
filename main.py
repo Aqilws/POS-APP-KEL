@@ -33,8 +33,7 @@ def main():
             stok_barang_menu()
         elif pilihan == "4":
             clear_screen()
-            lp = Laporan_Penjualan()
-            lp.menu()
+            Laporan_Penjualan().menu()
         elif pilihan == "0":
             clear_screen()
             print("Keluar dari aplikasi. Terima kasih!")
