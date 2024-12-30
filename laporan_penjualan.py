@@ -1,6 +1,12 @@
 from prettytable import PrettyTable
 import os
 
+"""
+tugas
+1. selesaikan metode edit
+2. selesaikan bug ketika cari laporan/transaksi den key text(kasir, tanggal, motode pembayaran)
+"""
+
 class Laporan_Penjualan:
     """
     Kelas untuk mengelola laporan penjualan,
@@ -9,6 +15,7 @@ class Laporan_Penjualan:
     """
 
     def __init__(self):
+        self.product_id = str
         self.transaction_id = str
         self.products = {
             # Format ID product: Nama barang, Harga Normal, Diskon, Harga setelah diskon
@@ -148,7 +155,7 @@ class Laporan_Penjualan:
         
         table = PrettyTable()
         table.title = "DETAIL INFORMASI"
-        table.field_names = ["No", "Nama Produk", "Harga Normal", "Diskon", "Harga Jual", "Banyaknya", "Jumlah`"]
+        table.field_names = ["No", "Product ID", "Nama Produk", "Harga Normal", "Diskon", "Harga Jual", "Banyaknya", "Jumlah`"]
         table.align["Nama Produk"] = 'l'
         table.align["Harga Normal"] = 'r'
         table.align["Harga Jual"] = 'r'
@@ -156,7 +163,8 @@ class Laporan_Penjualan:
         no = 1
         for prd_id in self.transactions[self.transaction_id]["items"]:
             table.add_row([
-                no, # Nomor urut
+                no, # Nomor urut,
+                prd_id, # Product ID
                 self.products[prd_id][0], # nama produk
                 f"{self.products[prd_id][1]:,}", # Harga Normal / Harga normal
                 self.products[prd_id][2], # Diskon
@@ -246,6 +254,52 @@ class Laporan_Penjualan:
                 self.clear_screen()
                 input("Laporan penjualan tidak ditemukan...")
 
+    def edit(self):
+        """Metode untuk merubah data yang ada didalam laporan"""
+
+        print("\n[1] Ubah jumlah")
+        print("[2] Hapus item")
+        print("[0] kembali")
+        selectd = input("\nMasukan pilihan: ")
+
+        # Validasi id product
+        if selectd == '1' or selectd == '2':  
+            while True:
+                print("\n[0] kembali")
+                self.product_id = input("Masukan ID Product: ")
+
+                if self.product_id in self.products:
+                    break
+                elif self.product_id == '0':
+                    selectd = '0'
+                    break
+                else:
+                    self.clear_screen()
+                    input("ID Product tidak ditemukan...")
+                    self.clear_screen()
+                    self.detail()
+
+        # Jalankan pilihan
+        match selectd:
+            case '0': # kembali
+                pass
+            
+            case '1': # ubah jumlah
+                print(f"Jumlah sebelumnya : {self.transactions[self.transaction_id]["items"]}")
+                print("\n[0] Batal")
+                input("Masukan Jumlah yang baru: ")
+                      
+            
+            case '2': # Hapus Item
+                pass
+            
+            case _:
+                self.clear_screen()
+                input("Pilihan tidak ada...")
+                self.clear_screen()
+                self.detail()
+                self.edit()
+
     def select(self, selectd):
         """
         metode mengarahkan perogram berdasarkan pilihan user
@@ -298,7 +352,7 @@ class Laporan_Penjualan:
                 self.menu()
         
     def sub_select(self):
-        print("\n[1] Hapus")
+        print("\n[1] Hapus Transaksi")
         print("[2] Ubah")
         print("[0] Kembali")
 
@@ -308,6 +362,8 @@ class Laporan_Penjualan:
             self.delete()
         elif action == '0':
             self.menu()
+        elif action == '2':
+            self.edit()
         else:
             self.clear_screen()
             input("Pilihan tidak ada...")
