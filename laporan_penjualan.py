@@ -4,7 +4,11 @@ import os
 """
 tugas
 1. selesaikan metode edit
+    --- prosess buatkan metode untuk menambahkan barang pada laporan transaksi
 2. benerin bug untuk total value harus menyesuaikan ketika ada perubahan qty
+3. 
+4. 
+6. 
 """
 
 class Laporan_Penjualan:
@@ -137,12 +141,30 @@ class Laporan_Penjualan:
         print(f"Total Qty   : {tQty:,}")
         print(table)
 
-        print("\nMenu laporan penjualan")
-        print("[1] Cari")
-        print("[2] Hapus")
-        print("[0] Kembali")
+        self.results = self.search()
+                
+        if self.results == '': # Kembali ke menu utama
+            return
+        
+        elif len(self.results) == 1: # Lanjut ke submenu
+            self.clear_screen()
+            self.transaction_id = self.results[0]
+            self.select()
+        elif len(self.results) > 1:
+            pass
 
-        self.select(input("\nPilih menu: "))
+        else :
+            self.clear_screen()
+            input("Laporan penjualan tidak ditemukan...")
+
+        """
+        jika stiap pilihan/aksi selesai dijalankan, maka akan otomatis kembali untuk menampilkan metode .menu()
+        """
+        if len(self.results) > 1:
+            self.clear_screen()
+            self.menu(values=self.results)
+        else:
+            self.menu()
     
     def detail(self):
         """
@@ -221,26 +243,32 @@ class Laporan_Penjualan:
         """
         Metode untuk menghapus item yang ada ditransaksi/laporan penjualan
         """
-        if self.transaction_id in self.transactions and self.product_id in self.products:
+        if self.transaction_id in self.transactions and self.product_id in self.transactions[self.transaction_id]["items"]:
             action = input("Apakah anda yakin ingin menghapus item tersebut? y/t: ")
             match action:
                 case 'y':
-                    self.transactions[self.transaction_id]["items"][self.product_id].pop()
-                    if not self.product_id in self.transactions[self.transaction_id]["items"]:
-                        self.clear_screen
-                        input("Item berhasi diapus...")
-                    else:
-                        self.clear_screen
-                        input("Item Gagal diapus...")
+                    self.transactions[self.transaction_id]["items"].pop(self.product_id)
+                
                 case 't':
                     return
+                
                 case _:
-                    input("Hanya ")
+                    self.clear_screen()
+                    input("Harap masukan printah Y atau T....")
+                    self.clear_screen()
+                    self.detail()
+                    self.delete_item()
+
+            if not self.product_id in self.transactions[self.transaction_id]["items"]:
+                self.clear_screen()
+                input("Item berhasi diapus...")
+            else:
+                self.clear_screen()
+                input("Item Gagal diapus...")
         else:
             self.clear_screen()
-            input("Harap masukan printah Y atau T")
+            input("ID Tidak ditemukan...")
             self.clear_screen()
-            self.delete_item
 
     def search(self):
         """
@@ -250,36 +278,41 @@ class Laporan_Penjualan:
         """
 
         print("\nCari transaksi")
-        print("0 -> Batal")
+        print("0 -> Kembali")
         query = input("\nCari: ").lower()
+        self.results = []
+
         if query == '0':
-            pass
+            return ''
+
         else:                
-            results = []
             # Cari berdasarkan transaction ID
             for trs_id in self.transactions:
                 if query == trs_id:
-                    results.append(trs_id)
+                    self.results.append(trs_id)
 
             # jika cari dengan ID tidak ditemukan, maka akan dicari dengan mencocokkan nama kasir, metode pembayran, tanggal
-            if results == []:
+            if self.results == []:
                 for trs_id in self.transactions:
                     if query in self.transactions[trs_id]["kasir"].lower() or query in self.transactions[trs_id]["pay"].lower() or query in self.transactions[trs_id]["date"]:
-                        results.append(trs_id)
-        
-            return results
+                        self.results.append(trs_id)
+
+            return self.results
 
     def edit(self):
         """
         Metode untuk merubah data yang ada didalam laporan
         """
 
+        old_data = self.transactions[self.transaction_id]["items"][self.product_id]
+        print("\n0 -> Batal")
+        print(f"Jumlah sebelumnya : {self.transactions[self.transaction_id]["items"][self.product_id]}")
+        
         try:
-            old_data = self.transactions[self.transaction_id]["items"][self.product_id]
-            print("\n0 -> Batal")
-            print(f"Jumlah sebelumnya : {self.transactions[self.transaction_id]["items"][self.product_id]}")
             new_qty = int(input("Masukan Jumlah yang baru: "))
-            if new_qty == '0': return
+            if new_qty == '0' or new_qty == '':
+                return
+
             self.transactions[self.transaction_id]["items"][self.product_id] = new_qty
             new_data = self.transactions[self.transaction_id]["items"][self.product_id]
 
@@ -290,106 +323,65 @@ class Laporan_Penjualan:
                 input("Gagal diubah...")
 
         except:
+            self.clear_screen()
             input("Harap masukan angka...")
             self.clear_screen()
+            self.detail()
             self.edit()
 
-    def select(self, selectd):
-        """
-        metode mengarahkan perogram berdasarkan pilihan user
-
-        Argumen 
-        selectd: berisi data yang diinput user
-        """
-        match selectd:
-            case "0": # kembali ke menu utama
-                return
-
-            case "1": # cari transaksi
-                results = self.search()
-
-                if len(results) == 1:
-                    self.clear_screen()
-                    self.transaction_id = results[0]
-                    self.sub_select()
-
-                elif len(results) > 1:
-                    self.clear_screen()
-                    self.menu(values=results)
-                else:
-                    self.clear_screen()
-                    input("Laporan penjualan tidak ditemukan...")
-
-            case "2": # Hapus
-                print("\nHapus Transaksi")
-                print("0 -> Batal")
-                self.transaction_id = input("Masukan ID transaksi: ")
-                if self.transaction_id == '0':
-                    pass
-                else :
-                    if self.transaction_id in self.transactions:
-                        self.delete()
-                    else:
-                        self.clear_screen()
-                        input("ID Tidak ditemukan...")
-                        self.clear_screen()
-                        self.select('3')
-
-            case _:
-                self.clear_screen()
-                input("Pilihan tidak ada..")
-                self.clear_screen()
-                # self.menu()
-        
-        self.menu()
-        """
-        jika stiap pilihan/aksi selesai dijalankan, maka akan otomatis kembali untuk menampilkan metode .menu()
-        """
-    
-    def sub_select(self):
-        end1 = True
-        end2 = True
-        while end1:
+    def select(self):
+        # end1 = True
+        # end2 = True
+        while True:
             self.detail()
-            print("\n[1] Hapus Transaksi")
+            print("\nMenu Transaksi")
+            print("[1] Hapus")
             print("[2] Ubah")
+            print("[3] Cari")
             print("[0] Kembali")
             selectd = input("\nPilihan: ")
 
             match selectd:
-                case '0':
+                case '0': # Kembali
                     break
                 
-                case '1':
+                case '1': # Hapus Transaksi
                     self.delete()
                     break
 
-                case '2':
-                    while end2:
+                case '2': # Ubah Transaksi
+                    while True:
                         self.detail()
-                        print("\nUbah Laporan Transaksi")
-                        print("[1] Ubah jumlah")
-                        print("[2] Tambah item")
-                        print("[3] Hapus item")
+                        print("\nUbah Transaksi")
+                        print("[1] Ganti jumlah Barang")
+                        print("[2] Tambah Barang")
+                        print("[3] Hapus Barang")
                         print("[0] Batal")
-                        sub_selectd = input("\nMasukan pilihan: ")
+                        selectd = input("\nMasukan pilihan: ")
+                        start = True
 
                         # Validasi id product
-                        if sub_selectd == '1' or sub_selectd == '3':  
+                        if selectd == '1' or selectd == '3':  
                             while True:
-                                print("\n0 -> Batal")
-                                self.product_id = input("Masukan ID Produk: ")
+                                self.clear_screen()
+                                self.detail()
+                                print("\nProses Ganti jumlah Barang") if selectd == '1' else print("\nProses Hapus Barang")
+                                print("0 -> Batal")
+                                self.product_id = input("\nMasukan ID Produk: ")
 
                                 if self.product_id in self.products:
                                     break
                                 elif self.product_id == '0':
+                                    start = False
                                     break
                                 else:
                                     self.clear_screen()
                                     input("ID Product tidak ditemukan...")
+                                    self.detail()
                                     # note benerin bug ketika kembali dari input id
-                        if self.product_id != '0':
-                            match sub_selectd:
+                                    
+                        if start:
+                            match selectd:
                                 case '0': # kembali
                                     break
                                 
@@ -403,7 +395,11 @@ class Laporan_Penjualan:
                                     self.clear_screen()
                                     input("Pilihan tidak ada...")
                                     self.clear_screen()
-                    
+                
+                case '3': # Cari Transaksi lain
+                    self.results = self.search()
+                    break
+
                 case _:
                     self.clear_screen()
                     input("Pilihan tidak ada...")
