@@ -141,7 +141,7 @@ class Laporan_Penjualan:
         print(f"Total Qty   : {tQty:,}")
         print(table)
 
-        self.results = self.search()
+        self.results = self.search_transaction()
                 
         if self.results == '': # Kembali ke menu utama
             return
@@ -270,11 +270,11 @@ class Laporan_Penjualan:
             input("ID Tidak ditemukan...")
             self.clear_screen()
 
-    def search(self):
+    def search_transaction(self):
         """
         Metode untuk mencari transaksi berdasarkan ID, Nama Kasir, Tanggal, dan Metode Pembayaran.
         
-        cara menggunakanya, cukup panggil metode-nya .search()
+        cara menggunakanya, cukup panggil metode-nya .search_transaction()
         """
 
         print("\nCari transaksi")
@@ -298,6 +298,27 @@ class Laporan_Penjualan:
                         self.results.append(trs_id)
 
             return self.results
+
+    def search_product(self):
+        """Metode untuk mencari barang/produk yang ada di daftar produk"""
+        
+        results = []
+        while True:
+            print("0 -> Batal")
+            qeury = input("Cari Produk: ").lower()
+
+            # Cari berdasarkan ID
+            for product_id, value in self.products.items():
+                if qeury in product_id or qeury in value[0].lower():
+                    results.append(product_id)
+            
+            if results == []:
+                input("Produk Tidak ditemukan...")
+                self.clear_screen()
+            else:
+                return results
+
+            # lagi membuat fitur tambah barang, baru selesai validasi barang yang dicari ada atau tidak, tugas selanjutnya uji coba sampai berhasil
 
     def edit(self):
         """
@@ -329,9 +350,18 @@ class Laporan_Penjualan:
             self.detail()
             self.edit()
 
+    def add_item(self):
+        """
+        Metode untuk menambahkan item/barang ke Laporan Penjualan
+        """
+
+        new_item = self.search_product()
+        
+        if new_item == []:
+            pass
+
+
     def select(self):
-        # end1 = True
-        # end2 = True
         while True:
             self.detail()
             print("\nMenu Transaksi")
@@ -387,6 +417,9 @@ class Laporan_Penjualan:
                                 
                                 case '1': # ubah jumlah
                                     self.edit()
+                                
+                                case '2': # Tambah Item
+                                    self.add_item()
 
                                 case '3': # Hapus Item
                                     self.delete_item()
@@ -397,7 +430,7 @@ class Laporan_Penjualan:
                                     self.clear_screen()
                 
                 case '3': # Cari Transaksi lain
-                    self.results = self.search()
+                    self.results = self.search_transaction()
                     break
 
                 case _:
