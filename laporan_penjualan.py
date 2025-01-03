@@ -1,7 +1,6 @@
 class Laporan_Penjualan:
     def __init__(self):
         self.__products = {
-            # Format ID product: Nama barang, Harga Normal, Diskon, Harga setelah diskon
             "71253001": ["Koper Lojel Lineo Salmon S", 500000, "50%", 250000],
             "71253002": ["Koper Lojel Lineo Salmon M", 750000, "40%", 450000],
             "71253003": ["Koper Lojel Lineo Salmon L", 1000000, "30%", 700000],
@@ -34,7 +33,6 @@ class Laporan_Penjualan:
             "82263002": ["Laptop Lenovo IdeaPad 3", 8500000, "15%", 7225000],
         }
         self.__transactions = {
-            # Format tahun bulan tanggal urutan
             1 : {
                 "tgl" : "01/12/24",
                 "kasir" : "andris",
@@ -42,7 +40,8 @@ class Laporan_Penjualan:
                     "079260002" : 1,
                     "082263001" : 1,
                     "078259002" : 3
-                }
+                },
+                "total_value":  123,
             }
         }
 
@@ -58,3 +57,4 @@ class Laporan_Penjualan:
 
 lp = Laporan_Penjualan()
 lp.menu()
+
