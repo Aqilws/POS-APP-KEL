@@ -6,7 +6,7 @@ tugas
 1. selesaikan metode edit
     --- prosess buatkan metode untuk menambahkan barang pada laporan transaksi
 2. benerin bug untuk total value harus menyesuaikan ketika ada perubahan qty
-3. 
+3. ubah data list products dan list transaction jadi seperti yang ada di dalam api.py
 4. 
 6. 
 """
@@ -437,3 +437,5 @@ class Laporan_Penjualan:
                     self.clear_screen()
                     input("Pilihan tidak ada...")
                     self.clear_screen()
+
+Laporan_Penjualan().menu()
