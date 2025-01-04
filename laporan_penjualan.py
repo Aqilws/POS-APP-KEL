@@ -303,22 +303,18 @@ class Laporan_Penjualan:
         """Metode untuk mencari barang/produk yang ada di daftar produk"""
         
         results = []
-        while True:
-            print("0 -> Batal")
-            qeury = input("Cari Produk: ").lower()
+        print("0 -> Batal\n")
+        qeury = input("Cari Produk: ").lower().strip()
 
-            # Cari berdasarkan ID
-            for product_id, value in self.products.items():
-                if qeury in product_id or qeury in value[0].lower():
-                    results.append(product_id)
+        if qeury == '0': return 'batal'
+        elif qeury == '': return 'skip'
+
+        # Cari berdasarkan ID
+        for product_id, value in self.products.items():
+            if qeury in product_id or qeury in value[0].lower():
+                results.append(product_id)
             
-            if results == []:
-                input("Produk Tidak ditemukan...")
-                self.clear_screen()
-            else:
-                return results
-
-            # lagi membuat fitur tambah barang, baru selesai validasi barang yang dicari ada atau tidak, tugas selanjutnya uji coba sampai berhasil
+        return results
 
     def edit(self):
         """
@@ -357,17 +353,56 @@ class Laporan_Penjualan:
 
         table = PrettyTable()
         table.field_names = ["ID Produk", "Nama Produk", "Harga", "Diskon", "Harga Promo"]
-        new_items = self.search_product()
-        
-        if new_items == []:
-            pass
-        elif len(new_items) > 1:
-            for prd_id in new_items:
-                print(self.products[prd_id])
+        while True:
+            print("\nTambah Barang ke Transaksi")
+            new_items = self.search_product()
             
-            input()
+            if new_items == 'batal':
+                break
+            elif new_items == 'skip':
+                self.clear_screen()
+                continue
+            elif new_items == []:
+                self.clear_screen()
+                input("Produk tidak ditemukan...")
+                self.clear_screen()
+                continue
+            elif len(new_items) > 1:
+                for prd_id in new_items:
+                    table.add_row([
+                        prd_id,
+                        self.products[prd_id][0],
+                        self.products[prd_id][1],
+                        self.products[prd_id][2],
+                        self.products[prd_id][3],
+                                ])
+                
+                self.clear_screen()
+                print("Produk ditemukan lebih dari 1. Coba cari berdasarkan ID Produknya..\n")
+                print(table)
+                table.clear_rows()
+            elif len(new_items) == 1:
+                table.add_row([
+                    new_items[0],
+                    self.products[new_items[0]][0],
+                    self.products[new_items[0]][1],
+                    self.products[new_items[0]][2],
+                    self.products[new_items[0]][3],
+                ])
+                self.clear_screen()
+                print(table)
+                
+                while True:
+                    decision = input("\nTambahkan barang tersebut? y/t: ").strip()
+                    if decision == 'y':
+                        pass # tambah
 
-
+                    # tugas selanjutnya menambahkan data terpilih ke penyimpanan data
+                    elif decision == 't':
+                        break
+                
+                break
+        
     def select(self):
         while True:
             self.detail()
