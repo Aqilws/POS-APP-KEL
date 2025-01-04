@@ -355,10 +355,17 @@ class Laporan_Penjualan:
         Metode untuk menambahkan item/barang ke Laporan Penjualan
         """
 
-        new_item = self.search_product()
+        table = PrettyTable()
+        table.field_names = ["ID Produk", "Nama Produk", "Harga", "Diskon", "Harga Promo"]
+        new_items = self.search_product()
         
-        if new_item == []:
+        if new_items == []:
             pass
+        elif len(new_items) > 1:
+            for prd_id in new_items:
+                print(self.products[prd_id])
+            
+            input()
 
 
     def select(self):
