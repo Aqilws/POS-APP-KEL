@@ -352,10 +352,12 @@ class Laporan_Penjualan:
         """
 
         table = PrettyTable()
+        table.title = "Tambah Barang ke laporan Transaksi"
         table.field_names = ["ID Produk", "Nama Produk", "Harga", "Diskon", "Harga Promo"]
         while True:
             print("\nTambah Barang ke Transaksi")
             new_items = self.search_product()
+            qty = int
             
             if new_items == 'batal':
                 break
@@ -391,13 +393,26 @@ class Laporan_Penjualan:
                 ])
                 self.clear_screen()
                 print(table)
-                
                 while True:
-                    decision = input("\nTambahkan barang tersebut? y/t: ").strip()
-                    if decision == 'y':
-                        pass # tambah
+                    try:
+                        print("\n0 -> Batal")
+                        qty = int(input("Banyaknya (pcs): "))
+                        if qty == 0:
+                            return
+                        break 
+                    except:
+                        self.clear_screen()
+                        input("Hanya boleh memasukan angka...")
+                        self.clear_screen()
+                        print(table)
 
-                    # tugas selanjutnya menambahkan data terpilih ke penyimpanan data
+                while True:
+                    decision = input("\nTambahkan barang tersebut? y/t: ").lower().strip()
+                    if decision == 'y':
+                        self.transactions[self.transaction_id]["items"] = {new_items[0]: qty}
+                        input(self.transactions[self.transaction_id]["items"][new_items[0]])
+                        # baru sampai sini. tugas selanjutnya memastikan bahwa item yang ditambahkan benar
+                        break
                     elif decision == 't':
                         break
                 
