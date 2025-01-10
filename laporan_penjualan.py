@@ -2,16 +2,6 @@ from prettytable import PrettyTable
 import os
 from api import get_produk_data, get_all_transaksi
 
-"""
-tugas
-1. selesaikan metode edit
-    --- prosess buatkan metode untuk menambahkan barang pada laporan transaksi
-2. benerin bug untuk total value harus menyesuaikan ketika ada perubahan qty
-3. ubah data list products dan list transaction jadi seperti yang ada di dalam api.py
-4. 
-6. 
-"""
-
 class Laporan_Penjualan:
     """
     Kelas untuk mengelola laporan penjualan,
@@ -450,4 +440,4 @@ class Laporan_Penjualan:
                     input("Pilihan tidak ada...")
                     self.clear_screen()
 
-Laporan_Penjualan().menu()
+# Laporan_Penjualan().menu()
