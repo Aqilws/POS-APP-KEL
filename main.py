@@ -3,6 +3,7 @@ from transaksi import transaksi_menu
 from produk_barang import produk_barang_menu
 from stok_barang import stok_barang_menu
 from laporan_penjualan import Laporan_Penjualan
+from login import login
 
 def clear_screen():
     """Menghapus tampilan terminal."""
@@ -17,14 +18,22 @@ def show_menu():
     print("[0] Keluar")
 
 def main():
+    clear_screen()
+    logged_in_user = login()
+    
+    if logged_in_user is None:
+        print("Login gagal. Program berhenti.")
+        return
+        
     while True:
         clear_screen()
+        print(f"Selamat datang, {logged_in_user}!")
         show_menu()
         pilihan = input("\nPilih menu: ")
         
         if pilihan == "1":
             clear_screen()
-            transaksi_menu()
+            transaksi_menu(logged_in_user)
         elif pilihan == "2":
             clear_screen()
             produk_barang_menu()

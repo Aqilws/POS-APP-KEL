@@ -1,9 +1,10 @@
-import getpass
+ import getpass
 
 
 users_db = {
-    "user1": "password123",
-    "user2": "securepass",
+    "admin": "admin123",
+    "kasir": "kasir123",
+    "manager": "manager123",
 }
 
 def login():
