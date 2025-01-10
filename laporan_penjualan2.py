@@ -82,6 +82,20 @@ class Laporan_Penjualan:
                 else:
                     return result
 
+    def detail_transaction(self):
+        table = PrettyTable()
+        table.title = "DETAIL INFORMASI"
+        table.field_names = ["No", "Product ID", "Nama Produk", "Harga Normal", "Diskon", "Harga Jual", "Banyaknya", "Jumlah`"]
+        table.align["Nama Produk"] = 'l'
+        table.align["Harga Normal"] = 'r'
+        table.align["Harga Jual"] = 'r'
+        table.align["Sub-Total"] = 'r'
+        no = 1
+
+        for i in self.transactions:
+            print(i)
+
+
     def menu(self):
         self.clear_screen()
         self.view_transactions()
@@ -90,6 +104,9 @@ class Laporan_Penjualan:
 
         if results == []:
             return
+        elif len(results) > 1:
+            self.detail_transaction()
+            
         else:
             self.transactions = results
             self.menu()        
