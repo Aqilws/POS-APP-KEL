@@ -1,7 +1,7 @@
 import os
 from transaksi import transaksi_menu
 from produk_barang import produk_barang_menu
-from stok_barang import stok_barang_menu
+# from stok_barang import stok_barang_menu
 from laporan_penjualan import Laporan_Penjualan
 from login import login
 
