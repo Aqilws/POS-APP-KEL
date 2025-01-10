@@ -36,7 +36,35 @@ produk = [
 ]
 
 # List untuk menyimpan transaksi
-transaksi_list = []
+transaksi_list = [
+    {
+        'id': 1,
+        'date': '01/12/24',
+        'kasir': 'andris',
+        'items': {'79260002': 1, '82263001': 1, '78259002': 3},
+        'total_qty': 5,
+        'total_value': 7312500,
+        'pay' : 'tunai'
+    },
+    {
+        'id': 2,
+        'date': '01/12/24',
+        'kasir': 'akil',
+        'items': {'79260002': 1, '82263001': 1, '78259002': 3},
+        'total_qty': 5,
+        'total_value': 7312500,
+        'pay' : 'tunai'
+    },
+    {
+        'id': 3,
+        'date': '01/12/24',
+        'kasir': 'tomo',
+        'items': {'79260002': 1, '82263001': 1, '78259002': 3},
+        'total_qty': 5,
+        'total_value': 7312500,
+        'pay' : 'tunai'
+    },
+]
 
 # Fungsi untuk menyimpan transaksi
 def simpan_transaksi(transaksi):

@@ -170,6 +170,7 @@ def menu_pembayaran(logged_in_user):
     
     # Buat data transaksi
     transaksi_data = {
+        #note: kil list transaksi tambahin id transaksi ya untuk datanya
         "date": datetime.now().strftime("%d/%m/%y"),
         "kasir": logged_in_user,
         "items": items_dict,  # Menggunakan format dictionary untuk items

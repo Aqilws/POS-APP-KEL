@@ -1,6 +1,6 @@
 from prettytable import PrettyTable
 import os
-from api import get_produk_data, get_all_transaksi
+from api2 import get_produk_data, get_all_transaksi
 
 """
 tugas
