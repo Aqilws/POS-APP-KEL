@@ -1,5 +1,6 @@
 from prettytable import PrettyTable
 from api import get_produk, get_all_transaksi
+from main import clear_screen
 import os
 
 class Laporan_Penjualan:
@@ -7,13 +8,17 @@ class Laporan_Penjualan:
         self.transaction_id = str
         self.product_id = str
         self.transactions = []
+        # Konversi dari data api ke data yang dibutuhkan
+        self.all_transaction = self.convert_transactions_from_api()
+        self.all_products = self.convert_products_from_api()
         self.menu()
     
-    def clear_screen(self):
-        """
-        metode untuk membersihkan text yang ada pada terminal
-        """
-        os.system('cls' if os.name == 'nt' else 'clear')
+    def convert_transactions_from_api(self):
+        return get_all_transaksi()
+    
+    def convert_products_from_api(self):
+        return get_produk()
+
 
     def view_transactions(self):
         """Metode untuk menampilkan semua transaksi"""
@@ -23,6 +28,8 @@ class Laporan_Penjualan:
         table.field_names = ["ID", "Tanggal", "Kasir", "Banyaknya", "Total Bayar", "Metode Pembayaran"]
         table.align["Kasir"] = 'l'
         table.align["Total Value"] = 'r'
+        print(self.all_products)
+        return
 
         if self.transactions == []:
             datas = get_all_transaksi 
@@ -30,14 +37,15 @@ class Laporan_Penjualan:
             datas = self.transactions
 
         for transaction in datas:
-            table.add_row([
-                transaction['id'],
-                transaction['date'],
-                transaction['kasir'],
-                transaction['total_qty'],
-                transaction['total_value'],
-                transaction['pay'],
-            ])
+            # table.add_row([
+            #     transaction['id'],
+            #     transaction['date'],
+            #     transaction['kasir'],
+            #     transaction['total_qty'],
+            #     transaction['total_value'],
+            #     transaction['pay'],
+            # ])
+            print(transaction)
         
         print(table)
     
@@ -54,9 +62,9 @@ class Laporan_Penjualan:
             if query == '0': # jika user memasukan angka 0 maka return angka '0' untuk menandakan. batal
                 return result
             elif query == '':
-                self.clear_screen()
+                clear_screen()
                 input("Input Tidak Boleh kosong...")
-                self.clear_screen()
+                clear_screen()
             else:
                 # Cari berdasarkan ID Transaksi
                 for transaction in get_all_transaksi:
@@ -76,9 +84,9 @@ class Laporan_Penjualan:
                 # Validasi hasil pencarian, jika tidak ditemukan akan diulang kembali
                 # jika ada hasilnya/ditemukan akan me-return variable results
                 if result == []:
-                    self.clear_screen()
+                    clear_screen()
                     input("Transaksi tidak ditemukan, harap coba lagi!...")
-                    self.clear_screen()
+                    clear_screen()
                 else:
                     return result
 
@@ -97,7 +105,7 @@ class Laporan_Penjualan:
 
 
     def menu(self):
-        self.clear_screen()
+        clear_screen()
         self.view_transactions()
 
         results = self.search_transaction()
