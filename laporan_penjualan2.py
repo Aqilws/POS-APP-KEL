@@ -1,52 +1,40 @@
 from prettytable import PrettyTable
 from api import get_produk, get_all_transaksi
 from main import clear_screen
-import os
 
 class Laporan_Penjualan:
     def __init__(self):
         self.transaction_id = str
         self.product_id = str
-        self.transactions = []
-        # Konversi dari data api ke data yang dibutuhkan
-        self.all_transaction = self.convert_transactions_from_api()
-        self.all_products = self.convert_products_from_api()
+        self.display_data = []                          # untuk menmpung data transaksi yang ingin ditampilkan
+        self.all_transactions = get_all_transaksi()     # untuk menmpung semua data transaksi yang ada di api
+        
+        # Jalankan metode menu
         self.menu()
-    
-    def convert_transactions_from_api(self):
-        return get_all_transaksi()
-    
-    def convert_products_from_api(self):
-        return get_produk()
 
 
     def view_transactions(self):
-        """Metode untuk menampilkan semua transaksi"""
+        """Metode untuk menampilkan transaksi"""
 
         table = PrettyTable()
         table.title = ("TRANSAKSI")
         table.field_names = ["ID", "Tanggal", "Kasir", "Banyaknya", "Total Bayar", "Metode Pembayaran"]
         table.align["Kasir"] = 'l'
         table.align["Total Value"] = 'r'
-        print(self.all_products)
-        return
 
-        if self.transactions == []:
-            datas = get_all_transaksi 
-        else:
-            datas = self.transactions
+        # jika data transaksi kosong maka akan menampilkan semua transaksi yang ada di api.py
+        if self.display_data == []: self.display_data = self.all_transactions
 
-        for transaction in datas:
-            # table.add_row([
-            #     transaction['id'],
-            #     transaction['date'],
-            #     transaction['kasir'],
-            #     transaction['total_qty'],
-            #     transaction['total_value'],
-            #     transaction['pay'],
-            # ])
-            print(transaction)
-        
+        for trs_id in self.display_data:
+            table.add_row([
+                trs_id,                                          # ID Transaksi
+                self.display_data[trs_id]['date'],          # Tanggal transaksi
+                self.display_data[trs_id]['kasir'],         # Nama Kasir
+                self.display_data[trs_id]['total_qty'],     # Total Banyaknya produk (pcs/qty)
+                self.display_data[trs_id]['total_value'],   # Total Bayar
+                self.display_data[trs_id]['pay'],           # Metode pembayaran
+            ])
+
         print(table)
     
     def search_transaction(self):
@@ -57,7 +45,7 @@ class Laporan_Penjualan:
             print("ID Transaksi/Nama kasir/Metode Pembayaran\n")
             print("0 -> Batal")
             query = input("Cari Transaksi: ").strip().lower()
-            result = []
+            result = [] # untuk menmpung hasil pencarian
 
             if query == '0': # jika user memasukan angka 0 maka return angka '0' untuk menandakan. batal
                 return result
@@ -67,22 +55,18 @@ class Laporan_Penjualan:
                 clear_screen()
             else:
                 # Cari berdasarkan ID Transaksi
-                for transaction in get_all_transaksi:
-                    if query == str(transaction["id"]):
-                        result.append(transaction)
+                for trs_id in self.all_transactions:
+                    if query == trs_id: result.append({trs_id: self.all_transactions[trs_id]})
                 
                 # jika dengan id tidak ditemukan maka cari dengan opsi lain (Nama kasir/Tanggal/Metode Pembayaran)
                 if result == []:
-                    for transaction in get_all_transaksi: 
-                        if  query in transaction['date'] or \
-                            query in transaction['kasir'].lower() or \
-                            query in transaction['pay'].lower():
-                            result.append(transaction)  
-                        
-                        # note: Backslash (\) digunakan untuk menunjukkan bahwa baris tersebut dilanjutkan ke baris berikutnya.
+                    for trs_id in self.all_transactions: 
+                        if  (query in self.all_transactions[trs_id]['date'] or          # cari berdasarkan tanggal
+                            query in self.all_transactions[trs_id]['kasir'].lower() or  # cari berdasarkan nama kasir
+                            query in self.all_transactions[trs_id]['pay'].lower()):     # cari berdasarkan metode pambayaran
+                            result.append({trs_id: self.all_transactions[trs_id]})      # simpan hasil pencarian
 
                 # Validasi hasil pencarian, jika tidak ditemukan akan diulang kembali
-                # jika ada hasilnya/ditemukan akan me-return variable results
                 if result == []:
                     clear_screen()
                     input("Transaksi tidak ditemukan, harap coba lagi!...")
@@ -102,7 +86,6 @@ class Laporan_Penjualan:
 
         for i in self.transactions:
             print(i)
-
 
     def menu(self):
         clear_screen()
