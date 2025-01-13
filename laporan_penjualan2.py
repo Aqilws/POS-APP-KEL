@@ -1,5 +1,5 @@
 from prettytable import PrettyTable
-from api import get_produk, get_all_transaksi
+from api import get_produk_data, get_all_transaksi
 from main import clear_screen
 
 class Laporan_Penjualan:
@@ -8,10 +8,10 @@ class Laporan_Penjualan:
         self.product_id = str
         self.display_data = []                          # untuk menmpung data transaksi yang ingin ditampilkan
         self.all_transactions = get_all_transaksi()     # untuk menmpung semua data transaksi yang ada di api
+        self.all_products = get_produk_data()           # untuk menmpung semua data produk
         
         # Jalankan metode menu
         self.menu()
-
 
     def view_transactions(self):
         """Metode untuk menampilkan transaksi"""
@@ -43,7 +43,7 @@ class Laporan_Penjualan:
         while True:
             print("\nCari Transaksi Berdasarkan ")
             print("ID Transaksi/Nama kasir/Metode Pembayaran\n")
-            print("0 -> Batal")
+            print("0 -> Kembali Ke Menu Utama")
             query = input("Cari Transaksi: ").strip().lower()
             result = [] # untuk menmpung hasil pencarian
 
@@ -56,7 +56,9 @@ class Laporan_Penjualan:
             else:
                 # Cari berdasarkan ID Transaksi
                 for trs_id in self.all_transactions:
-                    if query == trs_id: result.append({trs_id: self.all_transactions[trs_id]})
+                    if query == trs_id: 
+                        self.transaction_id = trs_id # Simpan ID transaksi
+                        result.append({trs_id: self.all_transactions[trs_id]})
                 
                 # jika dengan id tidak ditemukan maka cari dengan opsi lain (Nama kasir/Tanggal/Metode Pembayaran)
                 if result == []:
@@ -64,6 +66,7 @@ class Laporan_Penjualan:
                         if  (query in self.all_transactions[trs_id]['date'] or          # cari berdasarkan tanggal
                             query in self.all_transactions[trs_id]['kasir'].lower() or  # cari berdasarkan nama kasir
                             query in self.all_transactions[trs_id]['pay'].lower()):     # cari berdasarkan metode pambayaran
+                            self.transaction_id = trs_id                                # Simpan ID transaksi
                             result.append({trs_id: self.all_transactions[trs_id]})      # simpan hasil pencarian
 
                 # Validasi hasil pencarian, jika tidak ditemukan akan diulang kembali
@@ -75,17 +78,33 @@ class Laporan_Penjualan:
                     return result
 
     def detail_transaction(self):
+        def get_info_product():
+            for info in self.all_products:
+                if str(info["id"]) == self.product_id:
+                    return info
+
         table = PrettyTable()
-        table.title = "DETAIL INFORMASI"
-        table.field_names = ["No", "Product ID", "Nama Produk", "Harga Normal", "Diskon", "Harga Jual", "Banyaknya", "Jumlah`"]
+        table.title = "DETAIL TRANSAKSI"
+        table.field_names = ["ID Produk", "Nama Produk", "Harga", "Jumlah", "Sub-Total"]
         table.align["Nama Produk"] = 'l'
         table.align["Harga Normal"] = 'r'
         table.align["Harga Jual"] = 'r'
         table.align["Sub-Total"] = 'r'
-        no = 1
 
-        for i in self.transactions:
-            print(i)
+        for prd_id, qty in self.all_transactions[self.transaction_id]["items"].items():
+            self.product_id = prd_id
+            table.add_row([
+                prd_id,                                     # ID Produk
+                get_info_product()["nama"],                 # Nama Produk
+                f"{get_info_product()["harga"]:,}",         # Harga satuan
+                qty,                                        # Jumlah / qty
+                f"{get_info_product()["harga"] * qty:,}"    # Sub-Total
+            ])
+        
+        print()
+        print(table)
+
+        #note sampai sini, selesaikan fitur detail transaksi
 
     def menu(self):
         clear_screen()
@@ -95,9 +114,9 @@ class Laporan_Penjualan:
 
         if results == []:
             return
-        elif len(results) > 1:
+        elif len(results) == 1:
+            clear_screen()
             self.detail_transaction()
-            
         else:
             self.transactions = results
             self.menu()        
