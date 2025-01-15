@@ -37,30 +37,17 @@ produk = [
 
 # Dictionary untuk menyimpan transaksi
 transactions = {
-    "1": {
-        "date": "2024-03-20",
-        "kasir": "John",
-        "total_qty": 3,
-        "total_value": 1500000,
-        "pay": "cash",
-        "items": {
-            "71253001": 2,
-            "71253002": 1
-        }
-    }
+    
 }
 last_transaction_id = 1
 _pesanan_items = [
     
 ]
 
-# Fungsi internal untuk mengakses data (tidak menggunakan Flask)
 def get_produk_data():
-    """Fungsi internal untuk mengakses data produk"""
     return produk
 
 def get_produk_by_id_data(id):
-    """Fungsi internal untuk mengakses data produk berdasarkan ID"""
     return next((p for p in produk if p['id'] == id), None)
 
 def simpan_transaksi(transaksi):
@@ -84,64 +71,55 @@ def get_pesanan_items():
     print("Isi _pesanan_items:", _pesanan_items)
     return _pesanan_items
 
-# Flask routes (endpoint API)
-@app.route('/api/produk', methods=['GET'])
-def get_produk():
-    return jsonify(produk)
+karyawan = [
+    {
+        "Nama_Karyawan": "Muhamad Andris",
+        "Tanggal_Lahir": "29 Desember 2000",
+        "Posisi_Jabatan": "Manager toko",
+        "Username": "Muhammadandris",
+        "Password": "Andris20"
+    },
+    {
+        "Nama_Karyawan": "Aqil Wira Saputra",
+        "Tanggal_Lahir": "15 Juni 2004",
+        "Posisi_Jabatan": "Kasir",
+        "Username": "Aqil",
+        "Password": "Aqil24"
+    },
+    {
+        "Nama_Karyawan": "M Fatkhul Rozi",
+        "Tanggal_Lahir": "21 Januari 2002",
+        "Posisi_Jabatan": "Staf Gudang",
+        "Username": "Mfatkhulrozi",
+        "Password": "Rozi22"
+    },
+    {
+        "Nama_Karyawan": "Triam Tomo",
+        "Tanggal_Lahir": "29 Juli 2003",
+        "Posisi_Jabatan": "Pramuniaga",
+        "Username": "Triamtomo",
+        "Password": "Tomo23"
+    },
+    {
+        "Nama_Karyawan": "Nevi Afyanthi Sangadj",
+        "Tanggal_Lahir": "11 Oktober 2005",
+        "Posisi_Jabatan": "Admin Toko",
+        "Username": "Nefiafyanthisangadj",
+        "Password": "Nefi25"
+    }
+]
 
-@app.route('/api/produk/<int:id>', methods=['GET'])
-def get_produk_by_id(id):
-    item = get_produk_by_id_data(id)
-    if item:
-        return jsonify(item)
-    return jsonify({"error": "Produk tidak ditemukan"}), 404
+def get_karyawan_data():
+    return karyawan
 
-# Endpoint untuk menambah produk baru
-@app.route('/api/produk', methods=['POST'])
-def tambah_produk():
-    data = request.json
-    if "nama" in data and "harga" in data and "stok" in data:
-        new_id = max([p["id"] for p in produk]) + 1 if produk else 1
-        new_produk = {
-            "id": new_id,
-            "nama": data["nama"],
-            "harga": data["harga"],
-            "stok": data["stok"]
-        }
-        produk.append(new_produk)
-        return jsonify(new_produk), 201
-    return jsonify({"error": "Data produk tidak lengkap"}), 400
+def verify_karyawan_login(username, password):
+    for k in karyawan:
+        if k["Username"] == username and k["Password"] == password:
+            return k
+    return None
 
-# Endpoint untuk memperbarui data produk
-@app.route('/api/produk/<int:id>', methods=['PUT'])
-def update_produk(id):
-    data = request.json
-    item = next((p for p in produk if p['id'] == id), None)
-    if item:
-        item.update({
-            "nama": data.get("nama", item["nama"]),
-            "harga": data.get("harga", item["harga"]),
-            "stok": data.get("stok", item["stok"]),
-        })
-        return jsonify(item)
-    return jsonify({"error": "Produk tidak ditemukan"}), 404
 
-# Endpoint untuk menghapus produk
-@app.route('/api/produk/<int:id>', methods=['DELETE'])
-def delete_produk(id):
-    global produk
-    produk = [p for p in produk if p['id'] != id]
-    return jsonify({"message": "Produk berhasil dihapus"}), 200
-
-# Tambahkan endpoint baru untuk melihat pesanan items
-@app.route('/api/pesanan-items', methods=['GET'])
-def view_pesanan_items():
-    items = get_pesanan_items()
-    return jsonify(items)
-
-@app.route('/api/transaksi', methods=['GET'])
-def view_all_transaksi():
-    return jsonify(get_all_transaksi())
 
 if __name__ == '__main__':
     app.run(debug=True)
+
