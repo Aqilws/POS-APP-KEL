@@ -1,27 +1,20 @@
-import getpass
-
-
-users_db = {
-    "admin": "admin123",
-    "kasir": "kasir123",
-    "manager": "manager123",
-}
+from api import verify_karyawan_login
 
 def login():
-    print("Login")
-    username = input("Username: ")
-    password = getpass.getpass("Password: ")
-
+    print("=== Login ===")
+    username = input("Masukkan Username: ")
+    password = input("Masukkan Password: ")
     
-    if username in users_db and users_db[username] == password:
-        print("Login successful!")
-        return username
-    else:
-        print("Invalid username or password!")
-        return None
+    karyawan = verify_karyawan_login(username, password)
+    if karyawan:
+        print(f"\nLogin berhasil sebagai {karyawan['Posisi_Jabatan']}!")
+        return karyawan["Username"]
+    
+    print("\nUsername atau password salah!")
+    return None
 
-def logout(username):
-    print(f"{username} logged out successfully.")
+def logout():
+    print("Anda telah keluar dari sistem")
 
 def main():
     logged_in_user = None
